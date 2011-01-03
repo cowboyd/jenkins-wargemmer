@@ -1,4 +1,5 @@
-source "http://rubygems.org"
+source :rubygems
 
-# Specify your gem's dependencies in hudson.war.gemspec
-gemspec
+gem "rake"
+gem "rest-client"
+gem "json"

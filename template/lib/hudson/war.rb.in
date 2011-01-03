@@ -1,0 +1,76 @@
+require 'fileutils'
+module Hudson
+  module War
+    VERSION = '<%= hudson_version %>'
+    LOCATION = File.expand_path(File.join(File.dirname(__FILE__), "hudson.war"))
+
+    module_function
+
+    def unpack(dest_dir, output = $stdout)
+      target = File.dirname(dest_dir).tap do |dir_of_dest_dir|
+        raise "'#{dir_of_dest_dir}' is not a directory" unless File.directory?(dir_of_dest_dir)
+      end
+      FileUtils.mkdir_p dest_dir
+      Dir.chdir(dest_dir) do
+        sh "jar xvf #{LOCATION}", output
+      end
+    end
+
+    def cp(dest, output = $stdout)
+      FileUtils.cp(LOCATION, dest)
+      output << "copied #{LOCATION} -> #{dest}\n"
+    end
+
+    # desc "server [options]", "run a hudson server"
+    # method_option :home, :desc    => "use this directory to store server data", :type => :string, :default => File.join(ENV['HOME'], ".hudson", "server"), :banner => "PATH"
+    # method_option :port, :desc    => "run hudson server on this port", :type => :numeric, :default => 3001, :aliases => "-p"
+    # method_option :control, :desc => "set the shutdown/control port", :type => :numeric, :default => 3002, :aliases => "-c"
+    # method_option :daemon, :desc  => "fork into background and run as a daemon", :type => :boolean, :default => false
+    # method_option :kill, :desc    => "send shutdown signal to control port", :type => :boolean, :aliases => "-k"
+    # method_option :logfile, :desc => "redirect log messages to this file", :type => :string, :banner => "PATH"
+
+    def server(output, options)
+      home = options.home || File.join(ENV['HOME'], ".hudson", "server")
+      port = options.port.to_i || 3001
+      control = options.control.to_i || 3002
+      daemon = options.daemon
+      kill = options.kill
+      logfile = options.logfile
+
+      if kill
+        require 'socket'
+        TCPSocket.open("localhost", control) do |sock|
+          sock.write("0")
+        end
+      else
+        javatmp = File.join(home, "javatmp")
+        FileUtils.mkdir_p javatmp
+        ENV['HUDSON_HOME'] = serverhome
+        cmd = ["java", "-Djava.io.tmpdir=#{javatmp}", "-jar", LOCATION]
+        cmd << "--daemon" if daemon
+        cmd << "--logfile=#{File.expand_path(logfile)}" if logfile
+        cmd << "--httpPort=#{port}"
+        cmd << "--controlPort=#{control}"
+        output << cmd.join(" ")
+        exec(*cmd)
+      end
+    end
+
+    def classpath
+      dest_dir = File.join(ENV['HOME'], '.hudson', 'wars', VERSION)
+      if File.directory?(dest_dir)
+        "#{dest_dir}/WEB-INF/lib/hudson-core-#{VERSION}.jar"
+      else
+        FileUtils.mkdir_p(dest_dir)
+        unpack(dest_dir, [])
+        classpath
+      end
+    end
+
+    def sh(command, output = $stdout)
+      output << command + "\n"
+      output << result = `#{command}`
+      raise result unless $?.success?
+    end    
+  end
+end

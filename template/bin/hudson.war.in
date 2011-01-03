@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/hudson/war')
+
+
+war = Hudson::War
+parser = OptionParser.new
+
+parser.on("-v", "--version", String, "Use this version of hudson") do |version|
+  puts war::VERSION
+  exit(1)
+end
+
+parser.parse(ARGV)
+
+case cmd = ARGV.shift
+when 'unpack'
+  dest = ARGV.first
+  war.unpack(dest)
+when 'classpath'
+  puts war.classpath
+when 'cp'
+  dest = ARGV.first
+  war.cp dest
+else
+  puts war::LOCATION
+end
+
