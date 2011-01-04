@@ -18,7 +18,7 @@ puts current_gem_version = gem_metadata['version']
 
 if current_hudson_version > current_gem_version
   puts "upgrading..."
-  exec "rake clean version[#{current_hudson_version}] gem"
+  exec "rake clean gem[#{current_hudson_version}]"
 end
 
 
