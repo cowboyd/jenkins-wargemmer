@@ -35,11 +35,14 @@ It can copy itself anywhere
 Or if you want the classpath:
 
     $ hudson.war classpath
-    legolas:hudson.war cowboyd$ hudson.war classpath
     /Users/cowboyd/.hudson/wars/1.391/WEB-INF/lib/hudson-core-1.391.jar
 
 You can even run a test server with your shiny hudson war file.
 
     $ hudson.war server
+
+All of these functions can be accessed from ruby code via the `Hudson::War` module.
+
+
 
 
