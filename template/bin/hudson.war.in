@@ -1,20 +1,89 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
+require 'ostruct'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/hudson/war')
 
 
-war = Hudson::War
-parser = OptionParser.new
 
-parser.on("-v", "--version", String, "Use this version of hudson") do |version|
-  puts war::VERSION
-  exit(1)
+
+options = OpenStruct.new({
+  :home => File.join(ENV['HOME'], ".hudson", "server"),
+  :port => 3001,
+  :control => 3002,
+  :daemon => false,
+  :kill => false
+})
+parser = OptionParser.new
+parser.banner = "Usage: hudson.war server [options]"
+parser.on("--home DIR", String, "use this directory to store server data") {|dir| options.home = dir}
+parser.on("-p", "--port PORT", Integer, "run hudson server on this port") {|port| options.port = port} 
+parser.on("-c", "--control PORT", Integer, "set the shutdown/control port") {|control| options.control = control}
+parser.on("--daemon") {options.daemon = true}
+parser.on("-k", "--kill") {options.kill = true}
+parser.on("--logfile PATH", String, "redirect log messages to this file") {|path| options.logfile = path}
+
+help = proc do |cmd|
+  help = Help.new(parser)
+  if cmd && help.respond_to?(cmd)
+    puts help.send(cmd)
+  else
+    puts "usage: hudson.war COMMAND [OPTIONS]"
+    puts "  hudson.war help command"
+    puts "  hudson.war version"
+    puts "  hudson.war unpack DESTINATION"
+    puts "  hudson.war classpath"
+    puts "  hudson.war cp DESTINATION"
+    puts "  hudson.war server [OPTIONS]"
+    puts ""
+  end
 end
 
-parser.parse(ARGV)
+class Help
+  def initialize(server_options)
+    @server_options = server_options
+  end
+  def help
+    <<-HERE
+Usage: hudson.war help COMMAND
+  shows help for the specified command
+HERE
+  end
+  def version
+    <<-HERE
+Usage: hudson.war version
+  displays the version of hudson represented by this war
+HERE
+  end
+  def unpack
+    <<-HERE
+Usage: hudson.war unpack DESTINATION
+  unpack the hudson war to directory at DESTINATION
+HERE
+  end
+  def classpath
+    <<-HERE
+Usage: hudson.war classpath
+  return a classpath for hudson core which can be used for a javac invocation
+HERE
+  end
+  def cp
+    <<-HERE
+Usage: hudson.war cp PATH
+    copy the hudson.war file to PATH
+HERE
+  end
+  def server
+    @server_options.to_s
+  end
+end
 
+
+war = Hudson::War
 case cmd = ARGV.shift
+when "version", "-v", "--version"
+  puts war::VERSION
+  exit
 when 'unpack'
   dest = ARGV.first
   war.unpack(dest)
@@ -23,7 +92,12 @@ when 'classpath'
 when 'cp'
   dest = ARGV.first
   war.cp dest
+when 'server'
+  parser.parse(ARGV)
+  war.server(options)
+when "help", "-h", "--help"
+  help[ARGV.first]
 else
-  puts war::LOCATION
+  help[nil]
 end
 

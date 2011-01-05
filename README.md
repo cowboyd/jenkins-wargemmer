@@ -21,7 +21,7 @@ In addition to the war file  long with the The hudson-war gem comes with an exec
 Without any arguments, it returns the location of the hudson warfile itself:
 
     $ hudson.war location
-    /path/to/hudson.war
+    /Users/cowboyd/.rvm/gems/ruby-1.8.7-p174@hudson.war/gems/hudson-war-1.391/lib/hudson/hudson.war
 
 It can unpack itself to a given directory. This is useful if you want to extract certain assets such as classfiles, annotations, configurations from it.
 
@@ -29,7 +29,7 @@ It can unpack itself to a given directory. This is useful if you want to extract
     
 It can copy itself anywhere
 
-    legolas: cowboyd$ hudson.war cp tmp
+    $ hudson.war cp tmp
     copied /Users/cowboyd/.rvm/gems/ruby-1.8.7-p174@hudson.war/gems/hudson-war-1.391/lib/hudson/hudson.war -> tmp
 
 Or if you want the classpath:
@@ -37,4 +37,9 @@ Or if you want the classpath:
     $ hudson.war classpath
     legolas:hudson.war cowboyd$ hudson.war classpath
     /Users/cowboyd/.hudson/wars/1.391/WEB-INF/lib/hudson-core-1.391.jar
+
+You can even run a test server with your shiny hudson war file.
+
+    $ hudson.war server
+
 

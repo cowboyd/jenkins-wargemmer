@@ -21,15 +21,7 @@ module Hudson
       output << "copied #{LOCATION} -> #{dest}\n"
     end
 
-    # desc "server [options]", "run a hudson server"
-    # method_option :home, :desc    => "use this directory to store server data", :type => :string, :default => File.join(ENV['HOME'], ".hudson", "server"), :banner => "PATH"
-    # method_option :port, :desc    => "run hudson server on this port", :type => :numeric, :default => 3001, :aliases => "-p"
-    # method_option :control, :desc => "set the shutdown/control port", :type => :numeric, :default => 3002, :aliases => "-c"
-    # method_option :daemon, :desc  => "fork into background and run as a daemon", :type => :boolean, :default => false
-    # method_option :kill, :desc    => "send shutdown signal to control port", :type => :boolean, :aliases => "-k"
-    # method_option :logfile, :desc => "redirect log messages to this file", :type => :string, :banner => "PATH"
-
-    def server(output, options)
+    def server(options, output = $stdout)
       home = options.home || File.join(ENV['HOME'], ".hudson", "server")
       port = options.port.to_i || 3001
       control = options.control.to_i || 3002
@@ -45,7 +37,7 @@ module Hudson
       else
         javatmp = File.join(home, "javatmp")
         FileUtils.mkdir_p javatmp
-        ENV['HUDSON_HOME'] = serverhome
+        ENV['HUDSON_HOME'] = home
         cmd = ["java", "-Djava.io.tmpdir=#{javatmp}", "-jar", LOCATION]
         cmd << "--daemon" if daemon
         cmd << "--logfile=#{File.expand_path(logfile)}" if logfile
