@@ -73,6 +73,12 @@ Usage: hudson.war cp PATH
     copy the hudson.war file to PATH
 HERE
   end
+  def location
+    <<-HERE
+Usage: hudson.war location
+  prints the actual location on the file system of the hudson.war 
+HERE
+  end
   def server
     @server_options.to_s
   end
@@ -97,6 +103,8 @@ when 'server'
   war.server(options)
 when "help", "-h", "--help"
   help[ARGV.first]
+when "location"
+  puts war::LOCATION
 else
   help[nil]
 end
