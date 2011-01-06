@@ -68,6 +68,11 @@ task :install, :version do |t, options|
   sh "gem install pkg/#{options.version}/hudson-war-#{options.version}.gem"
 end
 
+task :push, :version do |t, options|
+  Rake::Task["gem"].invoke(options.version)
+  sh "gem push pkg/#{options.version}/hudson-war-#{options.version}.gem"
+end
+
 task :clean do
   sh "rm -rf pkg"
 end
