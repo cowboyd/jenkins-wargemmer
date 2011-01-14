@@ -43,7 +43,7 @@ module Hudson
         cmd << "--logfile=#{File.expand_path(logfile)}" if logfile
         cmd << "--httpPort=#{port}"
         cmd << "--controlPort=#{control}"
-        output << cmd.join(" ")
+        output << "#{cmd.join(" ")}\n"
         exec(*cmd)
       end
     end
