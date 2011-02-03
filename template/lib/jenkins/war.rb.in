@@ -1,8 +1,8 @@
 require 'fileutils'
-module Hudson
+module Jenkins
   module War
-    VERSION = '<%= hudson_version %>'
-    LOCATION = File.expand_path(File.join(File.dirname(__FILE__), "hudson.war"))
+    VERSION = '<%= jenkins_version %>'
+    LOCATION = File.expand_path(File.join(File.dirname(__FILE__), "jenkins.war"))
 
     module_function
 
@@ -22,7 +22,7 @@ module Hudson
     end
 
     def server(options, output = $stdout)
-      home = options.home || File.join(ENV['HOME'], ".hudson", "server")
+      home = options.home || File.join(ENV['HOME'], ".jenkins", "server")
       port = options.port.to_i || 3001
       control = options.control.to_i || 3002
       daemon = options.daemon
@@ -49,9 +49,9 @@ module Hudson
     end
 
     def classpath
-      dest_dir = File.join(ENV['HOME'], '.hudson', 'wars', VERSION)
+      dest_dir = File.join(ENV['HOME'], '.jenkins', 'wars', VERSION)
       if File.directory?(dest_dir)
-        "#{dest_dir}/WEB-INF/lib/hudson-core-#{VERSION}.jar"
+        "#{dest_dir}/WEB-INF/lib/jenkins-core-#{VERSION}.jar"
       else
         FileUtils.mkdir_p(dest_dir)
         unpack(dest_dir, [])

@@ -2,22 +2,22 @@
 
 require 'optparse'
 require 'ostruct'
-require File.expand_path(File.dirname(__FILE__) + '/../lib/hudson/war')
+require File.expand_path(File.dirname(__FILE__) + '/../lib/jenkins/war')
 
 
 
 
 options = OpenStruct.new({
-  :home => File.join(ENV['HOME'], ".hudson", "server"),
+  :home => File.join(ENV['HOME'], ".jenkins", "server"),
   :port => 3001,
   :control => 3002,
   :daemon => false,
   :kill => false
 })
 parser = OptionParser.new
-parser.banner = "Usage: hudson.war server [options]"
+parser.banner = "Usage: jenkins.war server [options]"
 parser.on("--home DIR", String, "use this directory to store server data") {|dir| options.home = dir}
-parser.on("-p", "--port PORT", Integer, "run hudson server on this port") {|port| options.port = port} 
+parser.on("-p", "--port PORT", Integer, "run jenkins server on this port") {|port| options.port = port} 
 parser.on("-c", "--control PORT", Integer, "set the shutdown/control port") {|control| options.control = control}
 parser.on("--daemon") {options.daemon = true}
 parser.on("-k", "--kill") {options.kill = true}
@@ -28,13 +28,13 @@ help = proc do |cmd|
   if cmd && help.respond_to?(cmd)
     puts help.send(cmd)
   else
-    puts "usage: hudson.war COMMAND [OPTIONS]"
-    puts "  hudson.war help command"
-    puts "  hudson.war version"
-    puts "  hudson.war unpack DESTINATION"
-    puts "  hudson.war classpath"
-    puts "  hudson.war cp DESTINATION"
-    puts "  hudson.war server [OPTIONS]"
+    puts "usage: jenkins.war COMMAND [OPTIONS]"
+    puts "  jenkins.war help command"
+    puts "  jenkins.war version"
+    puts "  jenkins.war unpack DESTINATION"
+    puts "  jenkins.war classpath"
+    puts "  jenkins.war cp DESTINATION"
+    puts "  jenkins.war server [OPTIONS]"
     puts ""
   end
 end
@@ -45,38 +45,38 @@ class Help
   end
   def help
     <<-HERE
-Usage: hudson.war help COMMAND
+Usage: jenkins.war help COMMAND
   shows help for the specified command
 HERE
   end
   def version
     <<-HERE
-Usage: hudson.war version
-  displays the version of hudson represented by this war
+Usage: jenkins.war version
+  displays the version of jenkins represented by this war
 HERE
   end
   def unpack
     <<-HERE
-Usage: hudson.war unpack DESTINATION
-  unpack the hudson war to directory at DESTINATION
+Usage: jenkins.war unpack DESTINATION
+  unpack the jenkins war to directory at DESTINATION
 HERE
   end
   def classpath
     <<-HERE
-Usage: hudson.war classpath
-  return a classpath for hudson core which can be used for a javac invocation
+Usage: jenkins.war classpath
+  return a classpath for jenkins core which can be used for a javac invocation
 HERE
   end
   def cp
     <<-HERE
-Usage: hudson.war cp PATH
-    copy the hudson.war file to PATH
+Usage: jenkins.war cp PATH
+    copy the jenkins.war file to PATH
 HERE
   end
   def location
     <<-HERE
-Usage: hudson.war location
-  prints the actual location on the file system of the hudson.war 
+Usage: jenkins.war location
+  prints the actual location on the file system of the jenkins.war 
 HERE
   end
   def server
@@ -85,7 +85,7 @@ HERE
 end
 
 
-war = Hudson::War
+war = Jenkins::War
 case cmd = ARGV.shift
 when "version", "-v", "--version"
   puts war::VERSION

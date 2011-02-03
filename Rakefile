@@ -11,9 +11,9 @@ def render(src, dest, use_binding = binding)
 end
 
 task :gem, :version do |t, options|
-  hudson_version = options.version
-  raise "invalid version number: #{options.version}" unless hudson_version.to_f > 0
-  directory gem_dir = "pkg/#{hudson_version}"
+  jenkins_version = options.version
+  raise "invalid version number: #{options.version}" unless jenkins_version.to_f > 0
+  directory gem_dir = "pkg/#{jenkins_version}"
   outs = INS.map do |f|
     filename = File.join(f.split('/')[1..-1])
     directory dest_dir = File.join(gem_dir, File.dirname(filename))
@@ -21,28 +21,28 @@ task :gem, :version do |t, options|
       render f, out.name, binding
     end
   end
-  directory war_dir = "#{gem_dir}/lib/hudson"
-  warfile = file("#{war_dir}/hudson.war" => war_dir) do |f|
+  directory war_dir = "#{gem_dir}/lib/jenkins"
+  warfile = file("#{war_dir}/jenkins.war" => war_dir) do |f|
     Dir.chdir(File.dirname(f.name)) do
-      sh "wget http://updates.hudson-labs.org/download/war/#{hudson_version}/hudson.war"
+      sh "wget http://updates.jenkins-ci.org/download/war/#{jenkins_version}/jenkins.war"
     end
   end
   
-  gemspec = file("#{gem_dir}/hudson-war.gemspec" => outs + [warfile]) do |f|
+  gemspec = file("#{gem_dir}/jenkins-war.gemspec" => outs + [warfile]) do |f|
     Gem::Specification.new do |s|
-      s.name        = "hudson-war"
-      s.version     = hudson_version
+      s.name        = "jenkins-war"
+      s.version     = jenkins_version
       s.platform    = Gem::Platform::RUBY
       s.authors     = ["Charles Lowell"]
       s.email       = ["cowboyd@thefrontside.net"]
-      s.homepage    = "http://rubygems.org/gems/hudson-war"
-      s.summary     = "fetch and use a specific hudson version with rubygems"
-      s.description = "download and install a specific version of the hudson war file which can be used for either running a server, or for plugin development"
-      s.rubyforge_project = "hudson-war"
+      s.homepage    = "http://rubygems.org/gems/jenkins-war"
+      s.summary     = "fetch and use a specific jenkins version with rubygems"
+      s.description = "download and install a specific version of the jenkins war file which can be used for either running a server, or for plugin development"
+      s.rubyforge_project = "jenkins-war"
 
       # s.files         = `git ls-files`.split("\n")
       # s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-      s.executables   = ['hudson.war']
+      s.executables   = ['jenkins.war']
       s.require_paths = ["lib"]
       sh "touch #{f.name}"
       sh "rm -rf #{gem_dir}/*.gem"
@@ -55,7 +55,7 @@ task :gem, :version do |t, options|
     end
   end
   
-  gem = file "#{gem_dir}/hudson-war-#{hudson_version}.gem" => gemspec do
+  gem = file "#{gem_dir}/jenkins-war-#{jenkins_version}.gem" => gemspec do
     Dir.chdir(gem_dir) do
       Gem::Builder.new(eval(File.read(File.basename(gemspec.name)))).build
     end
@@ -65,12 +65,12 @@ end
 
 task :install, :version do |t, options|
   Rake::Task["gem"].invoke(options.version)
-  sh "gem install pkg/#{options.version}/hudson-war-#{options.version}.gem"
+  sh "gem install pkg/#{options.version}/jenkins-war-#{options.version}.gem"
 end
 
 task :push, :version do |t, options|
   Rake::Task["gem"].invoke(options.version)
-  sh "gem push pkg/#{options.version}/hudson-war-#{options.version}.gem"
+  sh "gem push pkg/#{options.version}/jenkins-war-#{options.version}.gem"
 end
 
 task :clean do

@@ -5,21 +5,21 @@ require 'bundler/setup'
 require 'restclient'
 require 'json'
 
-print "latest hudson version..."
-hudson_metadata = JSON.parse RestClient.get("http://updates.hudson-labs.org/update-center.json").split("\n")[1..-2].join("\n")
+print "latest jenkins version..."
+jenkins_metadata = JSON.parse RestClient.get("http://updates.jenkins-ci.org/update-center.json").split("\n")[1..-2].join("\n")
 
-puts current_hudson_version = hudson_metadata['core']['version']
+puts current_jenkins_version = jenkins_metadata['core']['version']
 
 print "latest gem version..."
 
-gem_metadata = JSON.parse RestClient.get("http://rubygems.org/api/v1/gems/hudson-war.json")
+gem_metadata = JSON.parse RestClient.get("http://rubygems.org/api/v1/gems/jenkins-war.json")
 
 puts current_gem_version = gem_metadata['version']
 
-if current_hudson_version > current_gem_version
+if current_jenkins_version > current_gem_version
   puts "upgrading..."
   $stdout.flush
-  exec "rake push[#{current_hudson_version}]"
+  exec "rake push[#{current_jenkins_version}]"
 else
   puts "no need to upgrade. current gem is the latest"
 end
