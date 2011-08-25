@@ -1,4 +1,4 @@
-## Hudson Wargemmer
+## Jenkins Wargemmer
 
 #### What?
 
@@ -41,7 +41,7 @@ You can even run a test server with your shiny jenkins war file.
 
     $ jenkins.war server
 
-All of these functions can be accessed from ruby code via the `Hudson::War` module.
+All of these functions can be accessed from ruby code via the `Jenkins::War` module.
 
 
 
